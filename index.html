@@ -441,8 +441,17 @@ function cargarOrden(indice){
 }
 
 function nuevaOrden(){
-  document.getElementById("cliente").value = "";
-  document.getElementById("orden").value = "";
+  document.getElementById("cliente").
+  const historial = JSON.parse(
+  localStorage.getItem("collectorstotalOrdenes") || "[]"
+);
+
+const ultimoNumero = historial.reduce(
+  (mayor, item) => Math.max(mayor, parseInt(item.orden, 10) || 0),
+  0
+);
+
+document.getElementById("orden").value = ultimoNumero + 1;
   document.getElementById("fecha").value =
     new Date().toISOString().split("T")[0];
   document.getElementById("destino").value = "";

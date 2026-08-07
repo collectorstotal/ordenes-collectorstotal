@@ -441,7 +441,7 @@ function cargarOrden(indice){
 }
 
 function nuevaOrden(){
-  document.getElementById("cliente").
+  document.getElementById("cliente").value = "";
   const historial = JSON.parse(
   localStorage.getItem("collectorstotalOrdenes") || "[]"
 );

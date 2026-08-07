@@ -386,6 +386,10 @@ function guardarOrden(){
     "collectorstotalOrdenes",
     JSON.stringify(historial)
   );
+  
+const ordenActual = parseInt(valor("orden"), 10) || 0;
+document.getElementById("orden").value = ordenActual + 1;
+actualizar();
 
   mostrarHistorial();
   alert("Orden guardada correctamente.");

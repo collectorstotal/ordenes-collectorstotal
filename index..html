@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collectorstotal — Órdenes</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#07111f; 
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+.app{
+  max-width:720px;
+  margin:auto;
+  padding:18px;
+}
+h1{
+  color:#ff8a00;
+  text-align:center;
+  margin:8px 0 2px;
+}
+.subtitle{
+  text-align:center;
+  color:#b9c3d0;
+  margin-bottom:20px;
+}
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-bottom:16px;
+  padding:5px;
+  background:#0b1624;
+  border:1px solid #263850;
+  border-radius:13px;
+  position:sticky;
+  top:8px;
+  z-index:10;
+}
+.tab-button{
+  background:transparent;
+  color:#b9c3d0;
+  min-height:48px;
+  padding:9px 6px;
+  font-size:13px;
+  line-height:1.15;
+}
+.tab-button.active{
+  background:#ff8700;
+  color:#111;
+  box-shadow:0 4px 12px rgba(255,135,0,.22);
+}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.panel{
+  background:#101c2c;
+  border:1px solid #263850;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px;
+}
+label{
+  display:block;
+  font-weight:bold;
+  margin:12px 0 5px;
+}
+input,select{
+  width:100%;
+  padding:12px;
+  border:1px solid #53657c;
+  border-radius:8px;
+  font-size:16px;
+}
+.row{
+  display:grid;
+  grid-template-columns:1fr 90px 45px;
+  gap:7px;
+  margin-bottom:8px;
+}
+button{
+  border:0;
+  border-radius:8px;
+  padding:12px;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.primary{background:#ff8700;color:#111}
+.secondary{background:#2185d0;color:#fff}
+.danger{background:#c43d3d;color:#fff}
+.gray{background:#4c5968;color:#fff}
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:15px;
+}
+.full{
+  width:100%;
+  margin-top:8px;
+}
+.history-item{
+  background:#17273a;
+  border-radius:8px;
+  padding:10px;
+  margin:8px 0;
+}
+.inventory-form{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:8px;
+}
+.inventory-form label{margin-top:8px}
+.inventory-list{
+  margin-top:14px;
+  display:grid;
+  gap:8px;
+}
+.inventory-item{
+  background:#17273a;
+  border:1px solid #2c4058;
+  border-radius:10px;
+  padding:11px;
+}
+.inventory-item-header{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+.inventory-metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  margin-top:8px;
+  font-size:12px;
+}
+.metric{
+  background:#101c2c;
+  border-radius:7px;
+  padding:7px;
+}
+.metric span{
+  display:block;
+  color:#9fb0c4;
+  margin-bottom:2px;
+}
+.inventory-actions{
+  display:flex;
+  gap:6px;
+  margin-top:9px;
+}
+.inventory-actions button{padding:8px 10px;font-size:12px}
+.inventory-summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:12px;
+}
+.summary-card{
+  background:#0b1624;
+  border:1px solid #263850;
+  border-radius:9px;
+  padding:10px;
+  text-align:center;
+}
+.summary-card span{display:block;color:#9fb0c4;font-size:11px}
+.summary-card strong{display:block;margin-top:4px;color:#ff9d2e}
+.notice{
+  color:#b9c3d0;
+  font-size:12px;
+  line-height:1.4;
+  margin:10px 0 0;
+}
+@media(max-width:600px){
+  .inventory-form{grid-template-columns:1fr 1fr}
+  .inventory-form .name-field{grid-column:1/3}
+  .inventory-metrics{grid-template-columns:1fr 1fr}
+}
+#slip{
+  width:100mm;
+  min-height:150mm;
+  margin:20px auto;
+  padding:5mm;
+  background:#fff;
+  color:#000;
+  font-family:Arial,sans-serif;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border-bottom:2px solid #000;
+  padding-bottom:5px;
+}
+.logo{
+  width:20mm;
+  height:20mm;
+  object-fit:cover;
+  border-radius:50%;
+}
+.brand-text{
+  text-align:center;
+}
+.brand-text h2{
+  margin:0;
+  font-size:17px;
+}
+.brand-text p{
+  margin:2px 0 0;
+  font-size:10px;
+}
+.slip-title{
+  text-align:center;
+  margin:5px 0;
+  font-size:13px;
+}
+.info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+  font-size:10px;
+}
+.info div{
+  border-bottom:1px solid #aaa;
+  padding:3px 0;
+  min-height:16px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:6px;
+  font-size:10px;
+}
+th,td{
+  border:1px solid #333;
+  padding:4px;
+  text-align:left;
+}
+th:last-child,td:last-child{
+  width:17mm;
+  text-align:center;
+}
+.checks{
+  display:flex;
+  justify-content:space-between;
+  font-size:9px;
+  margin:7px 0;
+  border-top:1px solid #555;
+  padding-top:5px;
+}
+.footer{
+  border-top:1px solid #555;
+  padding-top:5px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.thanks{
+  font-size:9px;
+  line-height:1.3;
+  max-width:68mm;
+}
+.qr{
+  width:19mm;
+  height:19mm;
+}
+.instagram{
+  text-align:center;
+  font-size:8px;
+}
+@media print{
+  @page{
+    size:100mm 150mm;
+    margin:0;
+  }
+  body{background:#fff}
+  .app{display:none}
+  #slip{
+    display:block;
+    margin:0;
+    width:100mm;
+    height:150mm;
+    min-height:150mm;
+    overflow:hidden;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+  <h1>Collectorstotal</h1>
+  <div class="subtitle">Generador de órdenes y packing slips</div>
+
+  <nav class="tabs" aria-label="Secciones principales">
+    <button class="tab-button active" id="tabOrden" onclick="mostrarPestana('ordenEntrega',this)">Orden de entrega</button>
+    <button class="tab-button" id="tabInventario" onclick="mostrarPestana('inventario',this)">Inventario</button>
+    <button class="tab-button" id="tabHistorial" onclick="mostrarPestana('historialRespaldo',this)">Historial y respaldo</button>
+  </nav>
+
+  <section id="ordenEntrega" class="tab-content active">
+  <div class="panel">
+    <label>Cliente</label>
+    <input id="cliente" placeholder="Nombre del cliente" oninput="actualizar()">
+
+    <label>Número de orden</label>
+    <input id="orden" placeholder="Ejemplo: CT-001" oninput="actualizar()">
+
+    <label>Fecha</label>
+    <input id="fecha" type="date" oninput="actualizar()">
+
+    <label>Destino</label>
+    <input id="destino" placeholder="Ciudad, estado o país" oninput="actualizar()">
+
+    <label>Tracking</label>
+    <input id="tracking" placeholder="Número de seguimiento" oninput="actualizar()">
+
+    <label>Productos</label>
+    <div id="productos"></div>
+
+    <button class="secondary full" onclick="agregarProducto()">
+      + Agregar artículo
+    </button>
+
+    <div class="actions">
+      <button class="primary" onclick="guardarOrden()">Guardar orden</button>
+      <button class="secondary" onclick="window.print()">Imprimir / Guardar PDF</button>
+      <button class="gray" onclick="nuevaOrden()">Nueva orden</button>
+      <button class="danger" onclick="borrarHistorial()">Borrar historial</button>
+    </div>
+  </div>
+  </section>
+
+  <section id="inventario" class="tab-content">
+  <div class="panel">
+    <strong>Control de inventario</strong>
+    <p class="notice">Registra cada producto una sola vez. El stock se descontará automáticamente al guardar una orden.</p>
+
+    <div class="inventory-form">
+      <div class="name-field">
+        <label>Producto</label>
+        <input id="invNombre" placeholder="Nombre del producto">
+      </div>
+      <div>
+        <label>Stock</label>
+        <input id="invStock" type="number" min="0" step="1" placeholder="0">
+      </div>
+      <div>
+        <label>Costo</label>
+        <input id="invCosto" type="number" min="0" step="0.01" placeholder="$0.00">
+      </div>
+      <div>
+        <label>Venta</label>
+        <input id="invPrecio" type="number" min="0" step="0.01" placeholder="$0.00">
+      </div>
+    </div>
+
+    <button class="primary full" id="btnGuardarInventario" onclick="guardarProductoInventario()">
+      Agregar al inventario
+    </button>
+    <button class="gray full" id="btnCancelarEdicion" onclick="cancelarEdicionInventario()" style="display:none">
+      Cancelar edición
+    </button>
+
+    <div class="inventory-summary">
+      <div class="summary-card"><span>Unidades</span><strong id="totalUnidades">0</strong></div>
+      <div class="summary-card"><span>Inversión</span><strong id="totalInversion">$0.00</strong></div>
+      <div class="summary-card"><span>Ganancia potencial</span><strong id="totalGanancia">$0.00</strong></div>
+    </div>
+
+    <div id="listaInventario" class="inventory-list"></div>
+    <datalist id="opcionesInventario"></datalist>
+  </div>
+  </section>
+
+  <section id="historialRespaldo" class="tab-content">
+  <div class="panel">
+    <strong>Respaldo de información</strong>
+    <p class="notice">Guarda una copia de tus órdenes e inventario en un archivo. También podrás usarla para recuperar la información en este u otro dispositivo.</p>
+    <div class="actions">
+      <button class="secondary" onclick="exportarRespaldo()">Exportar respaldo</button>
+      <button class="gray" onclick="seleccionarRespaldo()">Importar respaldo</button>
+    </div>
+    <input id="archivoRespaldo" type="file" accept="application/json,.json" onchange="importarRespaldo(event)" style="display:none">
+  </div>
+
+  <div class="panel">
+    <strong>Historial</strong>
+    <div id="historial"></div>
+  </div>
+  </section>
+</div>
+
+<section id="slip">
+  <div class="brand">
+    <img class="logo" src="logo.jpeg" alt="Logo Collectorstotal">
+    <div class="brand-text">
+      <h2>COLLECTORSTOTAL</h2>
+      <p>Colecciona lo que amas</p>
+    </div>
+  </div>
+
+  <h3 class="slip-title">PACKING SLIP · RESUMEN DE ORDEN</h3>
+
+  <div class="info">
+    <div><strong>Cliente:</strong> <span id="pCliente"></span></div>
+    <div><strong>Orden:</strong> <span id="pOrden"></span></div>
+    <div><strong>Fecha:</strong> <span id="pFecha"></span></div>
+    <div><strong>Destino:</strong> <span id="pDestino"></span></div>
+    <div style="grid-column:1/3">
+      <strong>Tracking:</strong> <span id="pTracking"></span>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Artículo</th>
+        <th>Cant.</th>
+      </tr>
+    </thead>
+    <tbody id="tablaProductos"></tbody>
+  </table>
+
+  <div class="checks">
+    <span>□ Verificado</span>
+    <span>□ Inspeccionado</span>
+    <span>□ Sellado</span>
+    <span>□ Enviado</span>
+  </div>
+
+  <div class="footer">
+    <div class="thanks">
+      <strong>Gracias por confiar en Collectorstotal.</strong><br>
+      Cada pedido es preparado cuidadosamente para que llegue protegido.<br>
+      <strong>Colecciona lo que amas.</strong>
+    </div>
+
+    <div class="instagram">
+      <img class="qr"
+      src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://instagram.com/collectorstotal"
+      alt="QR Instagram">
+      <br>@collectorstotal
+    </div>
+  </div>
+</section>
+
+<script>
+let productos = [];
+let inventario = JSON.parse(localStorage.getItem("collectorstotalInventario") || "[]");
+let inventarioEditando = null;
+
+function mostrarPestana(id,boton){
+  document.querySelectorAll(".tab-content").forEach(seccion=>{
+    seccion.classList.toggle("active",seccion.id === id);
+  });
+  document.querySelectorAll(".tab-button").forEach(tab=>{
+    tab.classList.toggle("active",tab === boton);
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function dinero(valor){
+  return "$" + (Number(valor) || 0).toFixed(2);
+}
+
+function escaparHtml(texto){
+  return String(texto ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function guardarInventarioLocal(){
+  localStorage.setItem("collectorstotalInventario", JSON.stringify(inventario));
+  mostrarInventario();
+}
+
+function guardarProductoInventario(){
+  const nombre = valor("invNombre");
+  const stock = Number(document.getElementById("invStock").value);
+  const costo = Number(document.getElementById("invCosto").value);
+  const precio = Number(document.getElementById("invPrecio").value);
+
+  if(!nombre){
+    alert("Escribe el nombre del producto.");
+    return;
+  }
+  if(!Number.isInteger(stock) || stock < 0){
+    alert("El stock debe ser un número entero igual o mayor que cero.");
+    return;
+  }
+  if(costo < 0 || precio < 0 || !Number.isFinite(costo) || !Number.isFinite(precio)){
+    alert("Revisa el costo y el precio de venta.");
+    return;
+  }
+
+  const duplicado = inventario.find(item =>
+    item.nombre.toLowerCase() === nombre.toLowerCase() &&
+    item.id !== inventarioEditando
+  );
+  if(duplicado){
+    alert("Ese producto ya está registrado. Usa el botón Editar.");
+    return;
+  }
+
+  if(inventarioEditando){
+    const item = inventario.find(producto => producto.id === inventarioEditando);
+    if(item) Object.assign(item,{nombre,stock,costo,precio});
+  }else{
+    inventario.unshift({
+      id:Date.now().toString(),
+      nombre,
+      stock,
+      costo,
+      precio
+    });
+  }
+
+  guardarInventarioLocal();
+  cancelarEdicionInventario();
+}
+
+function editarProductoInventario(id){
+  const item = inventario.find(producto => producto.id === id);
+  if(!item) return;
+
+  inventarioEditando = id;
+  document.getElementById("invNombre").value = item.nombre;
+  document.getElementById("invStock").value = item.stock;
+  document.getElementById("invCosto").value = item.costo;
+  document.getElementById("invPrecio").value = item.precio;
+  document.getElementById("btnGuardarInventario").textContent = "Guardar cambios";
+  document.getElementById("btnCancelarEdicion").style.display = "block";
+  document.getElementById("invNombre").focus();
+}
+
+function cancelarEdicionInventario(){
+  inventarioEditando = null;
+  ["invNombre","invStock","invCosto","invPrecio"].forEach(id=>{
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("btnGuardarInventario").textContent = "Agregar al inventario";
+  document.getElementById("btnCancelarEdicion").style.display = "none";
+}
+
+function eliminarProductoInventario(id){
+  const item = inventario.find(producto => producto.id === id);
+  if(!item) return;
+  if(confirm(`¿Eliminar "${item.nombre}" del inventario?`)){
+    inventario = inventario.filter(producto => producto.id !== id);
+    guardarInventarioLocal();
+    if(inventarioEditando === id) cancelarEdicionInventario();
+  }
+}
+
+function mostrarInventario(){
+  const lista = document.getElementById("listaInventario");
+  const opciones = document.getElementById("opcionesInventario");
+
+  opciones.innerHTML = inventario
+    .map(item => `<option value="${escaparHtml(item.nombre)}"></option>`)
+    .join("");
+
+  if(inventario.length===0){
+    lista.innerHTML = '<p class="notice">Todavía no hay productos registrados.</p>';
+  }else{
+    lista.innerHTML = inventario.map(item=>{
+      const gananciaUnidad = item.precio - item.costo;
+      return `
+        <div class="inventory-item">
+          <div class="inventory-item-header">
+            <strong>${escaparHtml(item.nombre)}</strong>
+            <strong style="color:${item.stock > 0 ? "#61d095" : "#ff7272"}">
+              ${item.stock > 0 ? item.stock + " disponibles" : "Agotado"}
+            </strong>
+          </div>
+          <div class="inventory-metrics">
+            <div class="metric"><span>Costo</span><strong>${dinero(item.costo)}</strong></div>
+            <div class="metric"><span>Venta</span><strong>${dinero(item.precio)}</strong></div>
+            <div class="metric"><span>Ganancia/u.</span><strong>${dinero(gananciaUnidad)}</strong></div>
+            <div class="metric"><span>Margen</span><strong>${item.precio ? ((gananciaUnidad/item.precio)*100).toFixed(1) : "0.0"}%</strong></div>
+          </div>
+          <div class="inventory-actions">
+            <button class="secondary" onclick="editarProductoInventario('${item.id}')">Editar</button>
+            <button class="danger" onclick="eliminarProductoInventario('${item.id}')">Eliminar</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  const unidades = inventario.reduce((total,item)=>total + item.stock,0);
+  const inversion = inventario.reduce((total,item)=>total + (item.stock * item.costo),0);
+  const ganancia = inventario.reduce((total,item)=>total + (item.stock * (item.precio-item.costo)),0);
+  document.getElementById("totalUnidades").textContent = unidades;
+  document.getElementById("totalInversion").textContent = dinero(inversion);
+  document.getElementById("totalGanancia").textContent = dinero(ganancia);
+}
+
+function buscarEnInventario(nombre){
+  return inventario.find(item =>
+    item.nombre.toLowerCase() === String(nombre).trim().toLowerCase()
+  );
+}
+
+function calcularSalidaInventario(){
+  const cantidades = new Map();
+  productos.forEach(producto=>{
+    const nombre = String(producto.nombre || "").trim();
+    const cantidad = Number(producto.cantidad) || 0;
+    if(nombre && cantidad > 0){
+      const clave = nombre.toLowerCase();
+      cantidades.set(clave,(cantidades.get(clave) || 0) + cantidad);
+    }
+  });
+
+  const items = [];
+  const noRegistrados = [];
+  const errores = [];
+
+  cantidades.forEach((cantidad,clave)=>{
+    const item = inventario.find(producto => producto.nombre.toLowerCase() === clave);
+    if(!item){
+      noRegistrados.push(clave);
+    }else if(cantidad > item.stock){
+      errores.push(`${item.nombre}: solicitadas ${cantidad}, disponibles ${item.stock}`);
+    }else{
+      items.push({item,cantidad});
+    }
+  });
+
+  const costoTotal = items.reduce((total,mov)=>total + mov.cantidad * mov.item.costo,0);
+  const ventaTotal = items.reduce((total,mov)=>total + mov.cantidad * mov.item.precio,0);
+
+  return {
+    items,
+    noRegistrados,
+    errores,
+    costoTotal,
+    ventaTotal,
+    ganancia:ventaTotal-costoTotal
+  };
+}
+
+function exportarRespaldo(){
+  const respaldo = {
+    aplicacion:"Collectorstotal",
+    version:1,
+    creado:new Date().toISOString(),
+    ordenes:JSON.parse(localStorage.getItem("collectorstotalOrdenes") || "[]"),
+    inventario:JSON.parse(localStorage.getItem("collectorstotalInventario") || "[]")
+  };
+
+  const contenido = JSON.stringify(respaldo,null,2);
+  const archivo = new Blob([contenido],{type:"application/json"});
+  const enlace = document.createElement("a");
+  const fecha = new Date().toISOString().split("T")[0];
+  enlace.href = URL.createObjectURL(archivo);
+  enlace.download = `respaldo-collectorstotal-${fecha}.json`;
+  document.body.appendChild(enlace);
+  enlace.click();
+  enlace.remove();
+  URL.revokeObjectURL(enlace.href);
+}
+
+function seleccionarRespaldo(){
+  const input = document.getElementById("archivoRespaldo");
+  input.value = "";
+  input.click();
+}
+
+function importarRespaldo(evento){
+  const archivo = evento.target.files[0];
+  if(!archivo) return;
+
+  const lector = new FileReader();
+  lector.onload = function(){
+    try{
+      const respaldo = JSON.parse(lector.result);
+      if(
+        respaldo.aplicacion !== "Collectorstotal" ||
+        !Array.isArray(respaldo.ordenes) ||
+        !Array.isArray(respaldo.inventario)
+      ){
+        throw new Error("Formato no válido");
+      }
+
+      const confirmar = confirm(
+        "La información del respaldo reemplazará las órdenes y el inventario guardados actualmente. ¿Deseas continuar?"
+      );
+      if(!confirmar) return;
+
+      localStorage.setItem("collectorstotalOrdenes",JSON.stringify(respaldo.ordenes));
+      localStorage.setItem("collectorstotalInventario",JSON.stringify(respaldo.inventario));
+      inventario = respaldo.inventario;
+      mostrarInventario();
+      mostrarHistorial();
+      alert("Respaldo importado correctamente.");
+    }catch(error){
+      alert("No se pudo importar el archivo. Selecciona un respaldo válido de Collectorstotal.");
+    }
+  };
+  lector.readAsText(archivo);
+}
+
+function agregarProducto(nombre="", cantidad=1){
+  productos.push({nombre,cantidad});
+  mostrarProductos();
+}
+
+function mostrarProductos(){
+  const contenedor = document.getElementById("productos");
+  contenedor.innerHTML = "";
+
+  productos.forEach((producto, indice)=>{
+    const fila = document.createElement("div");
+    fila.className = "row";
+    fila.innerHTML = `
+      <input
+        placeholder="Nombre del artículo"
+        list="opcionesInventario"
+        value="${escaparHtml(producto.nombre)}"
+        oninput="cambiarProducto(${indice},'nombre',this.value)">
+      <input
+        type="number"
+        min="1"
+        value="${producto.cantidad}"
+        oninput="cambiarProducto(${indice},'cantidad',this.value)">
+      <button class="danger" onclick="eliminarProducto(${indice})">×</button>
+    `;
+    contenedor.appendChild(fila);
+  });
+
+  actualizar();
+}
+
+function cambiarProducto(indice,campo,valor){
+  productos[indice][campo] = valor;
+  actualizar();
+}
+
+function eliminarProducto(indice){
+  productos.splice(indice,1);
+  if(productos.length===0) agregarProducto();
+  else mostrarProductos();
+}
+
+function valor(id){
+  return document.getElementById(id).value.trim();
+}
+
+function actualizar(){
+  document.getElementById("pCliente").textContent = valor("cliente");
+  document.getElementById("pOrden").textContent = valor("orden");
+  document.getElementById("pFecha").textContent = valor("fecha");
+  document.getElementById("pDestino").textContent = valor("destino");
+  document.getElementById("pTracking").textContent = valor("tracking");
+
+  const tabla = document.getElementById("tablaProductos");
+  tabla.innerHTML = "";
+
+  productos.forEach(producto=>{
+    if(producto.nombre.trim()!==""){
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${producto.nombre}</td>
+        <td>${producto.cantidad}</td>
+      `;
+      tabla.appendChild(fila);
+    }
+  });
+}
+
+function datosOrden(){
+  return {
+    cliente:valor("cliente"),
+    orden:valor("orden"),
+    fecha:valor("fecha"),
+    destino:valor("destino"),
+    tracking:valor("tracking"),
+    productos:productos,
+    guardada:new Date().toLocaleString()
+  };
+}
+
+function guardarOrden(){
+  if(!valor("cliente")){
+    alert("Escribe el nombre del cliente.");
+    return;
+  }
+
+  const salida = calcularSalidaInventario();
+
+  if(salida.errores.length){
+    alert("No hay stock suficiente:\n\n" + salida.errores.join("\n"));
+    return;
+  }
+
+  if(salida.noRegistrados.length){
+    const continuar = confirm(
+      "Hay artículos que no están registrados en el inventario. " +
+      "La orden se guardará, pero esos artículos no descontarán stock ni calcularán ganancia.\n\n" +
+      "¿Deseas continuar?"
+    );
+    if(!continuar) return;
+  }
+
+  let historial =
+    JSON.parse(localStorage.getItem("collectorstotalOrdenes") || "[]");
+
+  const ordenGuardada = datosOrden();
+  ordenGuardada.resumenFinanciero = {
+    costoTotal:salida.costoTotal,
+    ventaTotal:salida.ventaTotal,
+    ganancia:salida.ganancia
+  };
+  historial.unshift(ordenGuardada);
+
+  salida.items.forEach(movimiento=>{
+    movimiento.item.stock -= movimiento.cantidad;
+  });
+  guardarInventarioLocal();
+  localStorage.setItem(
+    "collectorstotalOrdenes",
+    JSON.stringify(historial)
+  );
+  
+const ordenActual = parseInt(valor("orden"), 10) || 0;
+document.getElementById("orden").value = ordenActual + 1;
+actualizar();
+
+  mostrarHistorial();
+  alert("Orden guardada correctamente.");
+}
+
+function mostrarHistorial(){
+  const historial =
+    JSON.parse(localStorage.getItem("collectorstotalOrdenes") || "[]");
+
+  const contenedor = document.getElementById("historial");
+
+  if(historial.length===0){
+    contenedor.innerHTML = "<p>No hay órdenes guardadas.</p>";
+    return;
+  }
+
+  contenedor.innerHTML = "";
+
+  historial.forEach((orden,indice)=>{
+    const elemento = document.createElement("div");
+    elemento.className = "history-item";
+    elemento.innerHTML = `
+      <strong>${orden.cliente}</strong><br>
+      Orden: ${orden.orden || "Sin número"}<br>
+      <small>${orden.guardada}</small><br><br>
+      <button class="secondary" onclick="cargarOrden(${indice})">
+        Abrir orden
+      </button>
+    `;
+    contenedor.appendChild(elemento);
+  });
+}
+
+function cargarOrden(indice){
+  const historial =
+    JSON.parse(localStorage.getItem("collectorstotalOrdenes") || "[]");
+
+  const orden = historial[indice];
+
+  document.getElementById("cliente").value = orden.cliente || "";
+  document.getElementById("orden").value = orden.orden || "";
+  document.getElementById("fecha").value = orden.fecha || "";
+  document.getElementById("destino").value = orden.destino || "";
+  document.getElementById("tracking").value = orden.tracking || "";
+  productos = orden.productos || [];
+
+  mostrarProductos();
+  mostrarPestana("ordenEntrega",document.getElementById("tabOrden"));
+}
+
+function nuevaOrden(){
+  document.getElementById("cliente").value = "";
+  const historial = JSON.parse(
+  localStorage.getItem("collectorstotalOrdenes") || "[]"
+);
+
+const ultimoNumero = historial.reduce(
+  (mayor, item) => Math.max(mayor, parseInt(item.orden, 10) || 0),
+  0
+);
+
+document.getElementById("orden").value = ultimoNumero + 1;
+  document.getElementById("fecha").value =
+    new Date().toISOString().split("T")[0];
+  document.getElementById("destino").value = "";
+  document.getElementById("tracking").value = "";
+  productos = [];
+  agregarProducto();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function borrarHistorial(){
+  if(confirm("¿Seguro que deseas borrar todo el historial?")){
+    localStorage.removeItem("collectorstotalOrdenes");
+    mostrarHistorial();
+  }
+}
+
+document.getElementById("fecha").value =
+  new Date().toISOString().split("T")[0];
+
+agregarProducto();
+mostrarInventario();
+mostrarHistorial();
+</script>
+
+</body>
+</html>
+
